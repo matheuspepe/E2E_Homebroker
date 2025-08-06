@@ -1,0 +1,142 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f9;
+  padding: 20px;
+  margin: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2, h3 {
+  color: #1a5276;
+}
+
+.flex {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+input, select, button {
+  padding: 8px;
+  margin: 5px 5px 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 400px;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.error {
+  color: red;
+  font-size: 0.9em;
+}
+
+.success {
+  color: green;
+  font-size: 0.9em;
+}
+
+.scrollable {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+#logoutBtn {
+  float: right;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+}
+
+#logoutBtn:hover {
+  background-color: #c0392b;
+}
+
+.btn-cancelar {
+  background-color: #f1c40f;
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.btn-cancelar:hover {
+  background-color: #f39c12;
+}
+
+.btn-azul {
+  background-color: #2980b9;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+}
+
+.btn-azul:hover {
+  background-color: #1f618d;
+}
+
+.blue-section {
+  background-color: #ecf6fc;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.senha-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.senha-wrapper input[type="password"],
+.senha-wrapper input[type="text"] {
+  padding-right: 30px;
+}
+
+.senha-wrapper .toggleSenha {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.mensagem {
+  margin-top: 10px;
+  font-weight: bold;
+}

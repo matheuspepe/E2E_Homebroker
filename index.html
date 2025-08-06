@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>E2E Treinamentos - Home Broker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+
+    <!-- LOGIN FORM -->
+    <div id="login">
+      <h1>E2E Treinamentos Brokers</h1>
+      <h2>Login</h2>
+      <label>CPF: <input type="text" id="cpf" placeholder="111.111.111-11"></label><br>
+      <label>Senha:
+        <span class="senha-wrapper">
+          <input type="password" id="senha" placeholder="123">
+          <span class="toggleSenha" onclick="toggleSenha('senha', this)">👁️</span>
+        </span>
+      </label><br>
+      <button class="btn-azul" onclick="login()">Entrar</button>
+      <p>Não tem uma conta? <a href="#" onclick="mostrarCadastro()">Criar conta</a></p>
+      <div id="loginMsg" class="error"></div>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div id="cadastro" class="hidden">
+      <h2>Crie sua Conta</h2>
+      <form id="cadastroForm">
+        <input type="text" id="nome" placeholder="Nome Completo" required />
+        <span class="error" id="nomeError"></span>
+
+        <input type="text" id="cpfCadastro" placeholder="CPF" maxlength="14" required />
+        <span class="error" id="cpfError"></span>
+
+        <input type="email" id="email" placeholder="E-mail" required />
+        <span class="error" id="emailError"></span>
+
+        <input type="tel" id="celular" placeholder="Celular (somente números)" maxlength="11" required />
+        <span class="error" id="celularError"></span>
+
+        <input type="password" id="senhaCadastro" placeholder="Senha" required />
+        <span class="error" id="senhaError"></span>
+
+        <input type="password" id="confirmarSenha" placeholder="Confirmar Senha" required />
+        <span class="error" id="confirmarSenhaError"></span>
+
+        <button type="submit" id="criarContaBtn" disabled>Criar Conta</button>
+        <div id="mensagem" class="mensagem"></div>
+      </form>
+      <p style="text-align:center; margin-top:10px;">
+        <a href="#" onclick="mostrarLogin()">Já tem uma conta? Entrar</a>
+      </p>
+    </div>
+
+    <!-- PORTAL (após login) -->
+    <div id="portal" class="hidden">
+      <button id="logoutBtn" onclick="logout()">Sair</button>
+      <div class="blue-section">
+        <h2>Bem-vindo <span id="username"></span> | Saldo: R$ <span id="saldo"></span></h2>
+      </div>
+
+      <div class="flex">
+        <div style="flex: 1">
+          <h3>Carteira</h3>
+          <table id="carteira">
+            <thead><tr><th>Ativo</th><th>Quantidade</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div style="flex: 1">
+          <h3>Book de Ofertas (B3)</h3>
+          <div class="scrollable">
+            <table id="book">
+              <thead><tr><th>Ativo</th><th>Preço Atual (R$)</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <h3>Boleta de Compra e Venda</h3>
+      <select id="tipo"><option>Compra</option><option>Venda</option></select>
+      <select id="ativo"></select>
+      <input type="number" id="quantidade" placeholder="Qtd (múltiplos de 100)">
+      <input type="number" id="valor" placeholder="Valor por lote (R$)">
+      <button class="btn-azul" onclick="executarOperacao()">Enviar Ordem</button>
+      <div id="mensagemOperacao" class="error"></div>
+
+      <h3>Alterar Senha</h3>
+      <label>Nova Senha:
+        <span class="senha-wrapper">
+          <input type="password" id="novaSenha" placeholder="Digite a nova senha">
+          <span class="toggleSenha" onclick="toggleSenha('novaSenha', this)">👁️</span>
+        </span>
+      </label>
+      <button class="btn-azul" onclick="alterarSenha()">Salvar Nova Senha</button>
+      <div id="senhaMsg" class="success"></div>
+
+      <h3>Extrato de Operações</h3>
+      <table id="extrato">
+        <thead><tr><th>Tipo</th><th>Ativo</th><th>Qtd</th><th>Valor Total (R$)</th></tr></thead>
+        <tbody></tbody>
+      </table>
+
+      <h3>Book de Ordens</h3>
+      <table id="ordens">
+        <thead><tr><th>Tipo</th><th>Ativo</th><th>Qtd</th><th>Valor</th><th>Cotação</th><th>Status</th><th>Ação</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
