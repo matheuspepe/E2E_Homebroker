@@ -1,4 +1,67 @@
-// Dados iniciais
+// ====== DADOS INICIAIS ======
+function gerarHistoricoInicial() {
+  const agora = Date.now();
+  const pontos = 60; // last 60 minutes
+  const intervaloMs = 60 * 1000; // 1 minute
+
+  historicoPrecos = {};
+
+  for (let ativo in ativosB3) {
+    let precoBase = ativosB3[ativo];
+    historicoPrecos[ativo] = [];
+
+    // create points from oldest -> newest, aligned to minute start
+    for (let i = pontos; i > 0; i--) {
+      const t = Math.floor((agora - i * intervaloMs) / intervaloMs) * intervaloMs;
+
+      precoBase += (Math.random() - 0.5) * 0.2;
+      precoBase = parseFloat(precoBase.toFixed(2));
+
+      let open = precoBase + (Math.random() - 0.5) * 0.2;
+      let high = open + Math.random() * 0.3;
+      let low = open - Math.random() * 0.3;
+      let close = low + Math.random() * (high - low);
+
+      historicoPrecos[ativo].push({
+        t: t,
+        o: parseFloat(open.toFixed(2)),
+        h: parseFloat(high.toFixed(2)),
+        l: parseFloat(low.toFixed(2)),
+        c: parseFloat(close.toFixed(2))
+      });
+    }
+  }
+}
+
+function updateMinuteCandle(ativo, novoPreco) {
+  const agora = Date.now();
+  const minuteStart = Math.floor(agora / 60000) * 60000; // start of current minute
+
+  if (!historicoPrecos[ativo]) historicoPrecos[ativo] = [];
+  const hist = historicoPrecos[ativo];
+  const last = hist[hist.length - 1];
+
+  if (!last || last.t < minuteStart) {
+    // Start new candle — open = price at first tick of the minute
+    hist.push({
+      t: minuteStart,
+      o: parseFloat(novoPreco.toFixed(2)), // fix: use current tick, not last.c
+      h: parseFloat(novoPreco.toFixed(2)),
+      l: parseFloat(novoPreco.toFixed(2)),
+      c: parseFloat(novoPreco.toFixed(2))
+    });
+  } else {
+    // Update current candle's high/low/close with every tick
+    last.h = parseFloat(Math.max(last.h, novoPreco).toFixed(2));
+    last.l = parseFloat(Math.min(last.l, novoPreco).toFixed(2));
+    last.c = parseFloat(novoPreco.toFixed(2));
+  }
+
+  // keep last 60 minutes
+  const cutoff = minuteStart - 60 * 60 * 1000;
+  historicoPrecos[ativo] = hist.filter(d => d.t >= cutoff);
+}
+
 const ativosB3 = {
   PETR4: 28.50, VALE3: 72.30, ITUB4: 31.10, BBDC4: 27.80,
   ABEV3: 14.25, MGLU3: 3.45, BBAS3: 49.10, LREN3: 18.30
@@ -8,7 +71,11 @@ let usuarioAtual = null;
 let extrato = [];
 let ordens = [];
 let cpfAtual = "";
+let historicoPrecos = {};
 
+gerarHistoricoInicial();
+
+// ====== USUÁRIOS PADRÃO ======
 function inicializarUsuariosPadrao() {
   const padrao = {
     "11111111111": { senha: "123", nome: "Conta A", saldo: 100000, carteira: { PETR4: 300, VALE3: 200, ITUB4: 100 } },
@@ -20,6 +87,7 @@ function inicializarUsuariosPadrao() {
 }
 inicializarUsuariosPadrao();
 
+// ====== LOGIN / LOGOUT ======
 function login() {
   const cpf = document.getElementById("cpf").value.replace(/\D/g, '');
   const senha = document.getElementById("senha").value;
@@ -41,6 +109,8 @@ function login() {
     atualizarExtrato();
     atualizarOrdens();
     document.getElementById("senhaMsg").innerText = "";
+    inicializarGrafico();
+    atualizarGraficoAtivo();
   } else {
     document.getElementById("loginMsg").innerText = "CPF ou senha inválidos.";
   }
@@ -58,6 +128,7 @@ function logout() {
   document.getElementById("senha").value = "";
 }
 
+// ====== FUNÇÕES DE USUÁRIO ======
 function toggleSenha(idCampo, elemento) {
   const campo = document.getElementById(idCampo);
   campo.type = campo.type === "password" ? "text" : "password";
@@ -79,6 +150,7 @@ function alterarSenha() {
   document.getElementById("novaSenha").value = "";
 }
 
+// ====== ATUALIZAÇÃO DE TABELAS ======
 function atualizarCarteira() {
   const tbody = document.querySelector("#carteira tbody");
   tbody.innerHTML = "";
@@ -104,6 +176,7 @@ function preencherSelectAtivos() {
   }
 }
 
+// ====== OPERAÇÕES ======
 function executarOperacao() {
   const tipo = document.getElementById("tipo").value;
   const ativo = document.getElementById("ativo").value;
@@ -117,17 +190,14 @@ function executarOperacao() {
     mensagem.innerText = "Preencha quantidade válida (múltiplos de 100) e valor.";
     return;
   }
-
   if (tipo === "Compra" && total > usuarioAtual.saldo) {
     mensagem.innerText = "Saldo insuficiente para essa compra.";
     return;
   }
-
   if (tipo === "Venda" && (!usuarioAtual.carteira[ativo] || usuarioAtual.carteira[ativo] < qtd)) {
     mensagem.innerText = "Você não possui ativos suficientes para vender.";
     return;
   }
-
   if (Math.abs(valor - cotacao) > 5) {
     ordens.unshift({ tipo, ativo, qtd, valor, total, cotacao, status: "Rejeitada", id: Date.now() });
     atualizarOrdens();
@@ -197,7 +267,7 @@ function atualizarExtrato() {
   });
 }
 
-// CPF validator
+// ====== CADASTRO ======
 function validarCPF(cpf) {
   cpf = cpf.replace(/\D/g, '');
   if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
@@ -213,7 +283,6 @@ function validarCPF(cpf) {
   return resto === parseInt(cpf[10]);
 }
 
-// Cadastro
 const form = document.getElementById("cadastroForm");
 if (form) {
   const nome = document.getElementById("nome");
@@ -281,13 +350,139 @@ function mostrarLogin() {
   document.getElementById("login").classList.remove("hidden");
 }
 
-// Atualização automática
+// ====== EXPORTAÇÃO ======
+function baixarJSON() {
+  if (extrato.length === 0) {
+    alert("Não há operações para exportar.");
+    return;
+  }
+  const blob = new Blob([JSON.stringify(extrato, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "extrato_operacoes.json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function baixarCSV() {
+  if (extrato.length === 0) {
+    alert("Não há operações para exportar.");
+    return;
+  }
+  const header = ["Tipo", "Ativo", "Quantidade", "Valor Total (R$)"];
+  const linhas = extrato.map(e => [
+    e.tipo,
+    e.ativo,
+    e.qtd,
+    e.total.toFixed(2).replace(".", ",")
+  ]);
+  
+  let csvContent = header.join(";") + "\n" + linhas.map(l => l.join(";")).join("\n");
+  
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "extrato_operacoes.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ====== GRÁFICO (CANDLESTICK) ======
+window.grafico = null;
+
+function inicializarGrafico() {
+  const ctx = document.getElementById("graficoPrecos").getContext("2d");
+
+  window.grafico = new Chart(ctx, {
+    type: 'candlestick',
+    data: {
+      datasets: [{
+        label: '',
+        data: []
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        x: {
+          type: 'time',
+          time: { unit: 'minute' },
+          adapters: { date: { locale: 'pt-BR' } }
+        },
+        y: {
+          beginAtZero: false
+        }
+      }
+    }
+  });
+}
+
+function atualizarGrafico(ativo, intervaloMinutos) {
+  const agora = Date.now();
+  const duracaoMs = intervaloMinutos * 60 * 1000;
+
+  // show last 60 minutes of data (aggregated into the chosen interval)
+  const limite = agora - 60 * 60 * 1000;
+
+  // source = 1-minute candles
+  const src = (historicoPrecos[ativo] || []).filter(p => p.t >= limite).sort((a,b) => a.t - b.t);
+
+  // aggregate into buckets of duracaoMs
+  const aggregated = [];
+  src.forEach(c => {
+    const bucketStart = Math.floor(c.t / duracaoMs) * duracaoMs;
+    const last = aggregated[aggregated.length - 1];
+    if (!last || last.t !== bucketStart) {
+      aggregated.push({ t: bucketStart, o: c.o, h: c.h, l: c.l, c: c.c });
+    } else {
+      last.h = Math.max(last.h, c.h);
+      last.l = Math.min(last.l, c.l);
+      last.c = c.c; // last close wins
+    }
+  });
+
+  const dados = aggregated.map(p => ({ x: p.t, o: p.o, h: p.h, l: p.l, c: p.c }));
+
+  if (!window.grafico) return;
+
+  window.grafico.data.datasets[0].label = ativo;
+  window.grafico.data.datasets[0].data = dados;
+  window.grafico.update();
+}
+
+function atualizarGraficoAtivo() {
+  const ativoSelecionado = document.getElementById("ativoGrafico").value;
+  const intervalo = parseInt(document.getElementById("intervaloGrafico").value, 10);
+  atualizarGrafico(ativoSelecionado, intervalo);
+}
+
+// Atualiza gráfico imediatamente ao trocar ativo ou intervalo
+document.getElementById("ativoGrafico").addEventListener("change", atualizarGraficoAtivo);
+document.getElementById("intervaloGrafico").addEventListener("change", atualizarGraficoAtivo);
+
+// === setInterval: atualizar ativos e guardar OHLC consistente (t em ms) ===
 setInterval(() => {
+  const agora = Date.now();
+
   for (let ativo in ativosB3) {
-    ativosB3[ativo] += 0.01;
-    ativosB3[ativo] = parseFloat(ativosB3[ativo].toFixed(2));
+    const ultimoPreco = ativosB3[ativo];
+    const novoPreco = parseFloat((ultimoPreco + (Math.random() - 0.5) * 0.2).toFixed(2));
+    ativosB3[ativo] = novoPreco;
+
+    // update the current 1-minute candle (create if we've crossed minute boundary)
+    updateMinuteCandle(ativo, novoPreco);
   }
 
+  // try execute orders whose price matches current market price
   ordens.forEach(o => {
     if (o.status === "Aceita" && o.valor === ativosB3[o.ativo]) {
       aplicarOrdem(o);
@@ -301,5 +496,6 @@ setInterval(() => {
     atualizarOrdens();
     atualizarCarteira();
     atualizarExtrato();
+    try { atualizarGraficoAtivo(); } catch (e) { /* don't break app */ }
   }
-}, 10000);
+}, 10000); // keep ticks at 10s for price simulation

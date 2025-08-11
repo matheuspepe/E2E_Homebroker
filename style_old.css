@@ -1,7 +1,6 @@
 body {
   font-family: Arial, sans-serif;
-  background: #0d0d0d; /* dark background */
-  color: #f2f2f2; /* light text */
+  background: #f4f6f9;
   padding: 20px;
   margin: 0;
 }
@@ -9,14 +8,14 @@ body {
 .container {
   max-width: 1200px;
   margin: auto;
-  background: #1a1a1a; /* dark panel */
+  background: white;
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
 }
 
 h1, h2, h3 {
-  color: #ffffff; /* white headings */
+  color: #1a5276;
 }
 
 .flex {
@@ -29,22 +28,12 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
-  background: #141414; /* dark table background */
 }
 
 th, td {
-  border: 1px solid #333;
+  border: 1px solid #ccc;
   padding: 8px;
   text-align: center;
-}
-
-th {
-  background: #1f1f1f; /* slightly lighter for header row */
-  color: #ccc;
-}
-
-tr:nth-child(even) {
-  background: #1a1a1a;
 }
 
 .hidden {
@@ -54,38 +43,30 @@ tr:nth-child(even) {
 input, select, button {
   padding: 8px;
   margin: 5px 5px 5px 0;
-  border: 1px solid #444;
+  border: 1px solid #ccc;
   border-radius: 5px;
   box-sizing: border-box;
   width: 100%;
   max-width: 400px;
   display: block;
-  background: #141414;
-  color: #f2f2f2;
 }
 
 button {
   cursor: pointer;
-  background: #1f1f1f;
-  color: #f2f2f2;
-}
-
-button:hover {
-  background: #333;
 }
 
 button:disabled {
-  background-color: #555;
+  background-color: #ccc;
   cursor: not-allowed;
 }
 
 .error {
-  color: #ff4d4d; /* red for errors */
+  color: red;
   font-size: 0.9em;
 }
 
 .success {
-  color: #00ff99; /* green for success */
+  color: green;
   font-size: 0.9em;
 }
 
@@ -113,7 +94,6 @@ button:disabled {
   cursor: pointer;
   padding: 5px 10px;
   border-radius: 5px;
-  color: #000;
 }
 
 .btn-cancelar:hover {
@@ -133,7 +113,7 @@ button:disabled {
 }
 
 .blue-section {
-  background-color: #262626; /* dark panel instead of blue */
+  background-color: #ecf6fc;
   padding: 10px;
   border-radius: 5px;
 }
