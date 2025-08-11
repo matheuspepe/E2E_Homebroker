@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>E2E Treinamentos - Home Broker</title>
   <link rel="stylesheet" href="style.css" />
+
 </head>
 <body>
   <div class="container">
@@ -98,20 +99,60 @@
       <button class="btn-azul" onclick="alterarSenha()">Salvar Nova Senha</button>
       <div id="senhaMsg" class="success"></div>
 
-      <h3>Extrato de Operações</h3>
-      <table id="extrato">
-        <thead><tr><th>Tipo</th><th>Ativo</th><th>Qtd</th><th>Valor Total (R$)</th></tr></thead>
-        <tbody></tbody>
-      </table>
+<h3>Extrato de Operações</h3>
+<table id="extrato">
+  <thead><tr><th>Tipo</th><th>Ativo</th><th>Qtd</th><th>Valor Total (R$)</th></tr></thead>
+  <tbody></tbody>
+</table>
+<button class="btn-azul" onclick="baixarJSON()">Baixar JSON</button>
+<button class="btn-azul" onclick="baixarCSV()">Baixar CSV</button>
 
       <h3>Book de Ordens</h3>
       <table id="ordens">
         <thead><tr><th>Tipo</th><th>Ativo</th><th>Qtd</th><th>Valor</th><th>Cotação</th><th>Status</th><th>Ação</th></tr></thead>
         <tbody></tbody>
       </table>
-    </div>
-  </div>
 
+<h3>Evolução de Preço - Book de Ofertas</h3>
+
+<label for="ativoGrafico">Ativo:</label>
+<select id="ativoGrafico" onchange="atualizarGraficoAtivo()">
+  <option value="PETR4">PETR4</option>
+  <option value="VALE3">VALE3</option>
+  <option value="ITUB4">ITUB4</option>
+  <option value="BBDC4">BBDC4</option>
+  <option value="ABEV3">ABEV3</option>
+  <option value="MGLU3">MGLU3</option>
+  <option value="BBAS3">BBAS3</option>
+  <option value="LREN3">LREN3</option>
+</select>
+
+<label for="intervaloGrafico">Intervalo:</label>
+<select id="intervaloGrafico" onchange="atualizarGraficoIntervalo()">
+  <option value="1">1 Minuto</option>
+  <option value="5">5 Minutos</option>
+  <option value="30">30 Minutos</option>
+  <option value="60">1 Hora</option>
+</select>
+
+<canvas id="graficoPrecos" height="100"></canvas>
+
+    </div>
+    </div>
+
+<!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Luxon (biblioteca de datas) -->
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3.7.1/build/global/luxon.min.js"></script>
+
+  <!-- Chart.js date adapter (Luxon) — necessário para time scale funcionar -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js"></script>
+
+  <!-- Plugin de candlestick/ohlc -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.2.1/dist/chartjs-chart-financial.min.js"></script>
+
+  <!-- seu script -->
   <script src="script.js"></script>
 </body>
 </html>
