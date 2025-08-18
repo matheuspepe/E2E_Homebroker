@@ -294,6 +294,26 @@ if (form) {
   const criarContaBtn = document.getElementById("criarContaBtn");
   const mensagem = document.getElementById("mensagem");
 
+// --- Regras de digitação dos campos (sem alterar demais funcionalidades) ---
+  // CPF: somente dígitos, ponto e hífen
+  cpf.addEventListener("input", () => {
+    const permitido = cpf.value.replace(/[^\d.\-]/g, "");
+    if (permitido !== cpf.value) cpf.value = permitido;
+  });
+
+  // Celular: somente dígitos
+  celular.addEventListener("input", () => {
+    const permitido = celular.value.replace(/\D/g, "");
+    if (permitido !== celular.value) celular.value = permitido;
+  });
+
+  // Nome: somente letras (com acentos) e espaços
+  // Usamos faixa de letras latinas incluindo acentos comuns em PT-BR
+  nome.addEventListener("input", () => {
+    const permitido = nome.value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s]/g, "");
+    if (permitido !== nome.value) nome.value = permitido;
+  });
+
   function validarFormulario() {
     const nomeValido = nome.value.length >= 6;
     const cpfValido = validarCPF(cpf.value);
